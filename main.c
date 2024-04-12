@@ -3,9 +3,12 @@
 #include "solver.h"
 
 //cette variable globale va representer le symbole courant que l'on a lu
-//!IMPORTANT: la valeur de calu est le premier caractère non encore examiné
+//!IMPORTANT: la valeur de c est le premier caractère non encore examiné
 extern char c;
 
+//variable globale pour la gestion d'erreur
+//peut eventuelllement servir a determiner la nature de l'erreur au besoin
+extern int e;
 
 int estCaractereBlanc(char c);
 
@@ -20,7 +23,7 @@ int reconnaitreOperateurAdditif(); // cette fonction verifie qu'un caractere est
 
 int reconnaitreChiffre(); // cette fonction verifie qu'un caractere est bien un operateur additif
 
-int reconnaitreNombre(); // cette fonction verifie qu'une chaine est bien un nombre
+int reconnaitreNombre(int value); // cette fonction verifie qu'une chaine est bien un nombre
 
 int reconnaitreFacteur(); // cette fonction verifie qu'une chaine est bien un facteur
 
@@ -28,15 +31,28 @@ int reconnaitreTerme(); // cette fonction verifie qu'une chaine est bien un term
 
 int reconnaitreExpression(); // cette fonction verifie qu'une chaine est bien une expression
 
+void flushInputBuffer() {
+    int character;
+    while ((character = getchar()) != '\n' && character != EOF);
+}
+
 
 int main() {
-    printf("Entrez une expression arithmetique : ");
-    lecture();
-    reconnaitreExpression();
-    if ( c == '=') {
-        printf("Syntaxe correcte\n");
-    } else {
-        erreurSyntaxe();
+    while(1){
+        printf("A toi : ");
+        lecture();
+        if(c == '.') {
+            printf("Au revoir...\n");
+            exit(0);
+        }
+        int result = reconnaitreExpression();
+        if ( c == '=' && e == 0) {
+            printf("la syntaxe de l'expression est correcte\n"
+                   "sa valeur est : %d\n", result);
+        } else {
+            erreurSyntaxe();
+        }
+        flushInputBuffer();
     }
     return 0;
 }

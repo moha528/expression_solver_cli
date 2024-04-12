@@ -1,8 +1,8 @@
-launch: app.exe
+launch: build
 	./app.exe
 
-app.exe: main.c
+build: main.c
 	gcc main.c -o app.exe
 
-clean: app.exe
+clean: build
 	del app.exe

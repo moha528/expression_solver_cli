@@ -1,10 +1,10 @@
+#ifndef SOLVER_H
+#define SOLVER_H
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef SOLVER_H
-#define SOLVER_H
-
 char c;
+int e = 0;
 
 int reconnaitreExpression();
 
@@ -19,8 +19,7 @@ void lecture() {
 }
 
 void erreurSyntaxe() {
-    printf("Erreur de syntaxe\n");
-    exit(1);
+    printf("La syntaxe de l'expression est erronee\n");
 }
 
 int reconnaitreOperateurMultiplicatif(){
@@ -35,53 +34,72 @@ int reconnaitreChiffre(){
     return c >= '0' && c <= '9';
 }
 
-int reconnaitreNombre() {
+int valeurChiffre() {
+    return c - '0';
+}
+
+int reconnaitreNombre(int value) {
     if (reconnaitreChiffre()) {
+        value = value * 10 + valeurChiffre();
         lecture();
-        return reconnaitreChiffre() ? reconnaitreNombre() : 1;
+        return reconnaitreChiffre() ? reconnaitreNombre(value) : value;
     } else {
-        return 0;
+        return value;
     }
 }
 
 int reconnaitreFacteur() {
+    int result = 0;
     if (reconnaitreChiffre()) {
-        return reconnaitreNombre();
+        result = reconnaitreNombre(0);
     } else if (c == '(') {
         lecture();
-        reconnaitreExpression();
+        result = reconnaitreExpression();
         if (c != ')') {
-            erreurSyntaxe();
+            e = 1;
         }
         lecture();
-        return 1;
     } else {
-        erreurSyntaxe();
+        e = 1;
     }
+    return result;
 }
 
 int reconnaitreTerme() {
-    if (!reconnaitreFacteur())
-        return 0;
+    int result = reconnaitreFacteur();
 
     if (reconnaitreOperateurMultiplicatif()) {
+        char operation = c;
         lecture();
-        return reconnaitreTerme();
+        int membre = reconnaitreTerme();
+//        printf("test : %d %c %d\n",result,operation,membre);
+        if(operation == '*')
+            result *= membre;
+        else {
+            if(membre == 0){
+                e=1;
+                return 0;
+            }
+            result /= membre;
+        }
     }
 
-    return 1;
+    return result;
 }
 
 int reconnaitreExpression() {
-    if(!reconnaitreTerme())
-        return 0;
-
+    int result = reconnaitreTerme();
     if (reconnaitreOperateurAdditif()) {
+        char operation = c;
         lecture();
-        return reconnaitreExpression();
+        int membre = reconnaitreExpression();
+//        printf("test : %d %c %d\n",result,operation,membre);
+        if(operation == '+')
+            result += membre;
+        else
+            result -= membre;
     }
-
-    return 1;
+    return result;
 }
 
 #endif
