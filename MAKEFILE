@@ -1,0 +1,8 @@
+launch: app.exe
+	./app.exe
+
+app.exe: main.c
+	gcc main.c -o app.exe
+
+clean: app.exe
+	del app.exe
