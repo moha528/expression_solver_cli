@@ -53,6 +53,7 @@ int main() {
             erreurSyntaxe();
         }
         flushInputBuffer();
+        e = 0;
     }
     return 0;
 }
